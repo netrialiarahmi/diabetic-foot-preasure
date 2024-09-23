@@ -2,7 +2,16 @@ import streamlit as st
 import torch
 import cv2
 import numpy as np
-from your_model_file import MobileNetV3Model  # Ganti dengan path file model Anda
+import requests
+
+# URL model
+MODEL_URL = "https://github.com/netrialiarahmi/diabetic-foot-preasure/raw/main/mobilenet_v3_model.pth"
+
+# Fungsi untuk mengunduh model
+def download_model(url):
+    response = requests.get(url)
+    with open('mobilenet_v3_model.pth', 'wb') as f:
+        f.write(response.content)
 
 # Fungsi preprocessing
 def preprocessing(image):
@@ -20,8 +29,12 @@ def load_model():
     model.eval()  # Set model ke mode evaluasi
     return model
 
-# Muat model saat aplikasi dijalankan
-model = load_model()
+# Download model jika belum ada
+try:
+    model = load_model()
+except FileNotFoundError:
+    download_model(MODEL_URL)
+    model = load_model()
 
 # Streamlit interface
 st.title("Prediksi Penyakit Diabetes")
