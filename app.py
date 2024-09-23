@@ -87,14 +87,14 @@ if uploaded_left_image and uploaded_right_image:
         client = openai.OpenAI(api_key=openai.api_key)
         # Call OpenAI API for analysis
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": "You are a medical assistant specializing in diabetic foot conditions."},
                 {"role": "user", "content": analysis_prompt},
-                {"role": "assistant", "content": ""}
             ]
         )
 
+    reason = response.choices[0].message.content
         analysis_result = response['choices'][0]['message']['content']
 
         st.write("### Analysis Result:")
