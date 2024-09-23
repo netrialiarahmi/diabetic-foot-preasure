@@ -7,6 +7,7 @@ import numpy as np
 from PIL import Image
 from torchvision import models
 import torch.nn.functional as F
+import torch.nn as nn  # Tambahkan ini untuk mengimpor nn
 
 # Load your model and any other necessary data
 class MobileNetV3Model(nn.Module):
@@ -49,4 +50,3 @@ if uploaded_left_image and uploaded_right_image:
     with torch.no_grad():
         prediction = model(left_image, right_image)
         st.write(f"Prediction: {'Diabetic' if prediction > 0.5 else 'Non-Diabetic'}")
-
