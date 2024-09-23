@@ -10,8 +10,8 @@ import torch.nn.functional as F
 import torch.nn as nn
 import openai
 
-# Set up OpenAI API key
-openai.api_key = 'YOUR_API_KEY_HERE'  # Ganti dengan API key Anda
+openai_api_key = st.secrets["OPENAI_API_KEY"]
+openai.api_key = openai_api_key
 
 # Load your model and any other necessary data
 class MobileNetV3Model(nn.Module):
@@ -87,9 +87,9 @@ if uploaded_left_image and uploaded_right_image:
             f"The prediction is that the patient is {prediction_label}. "
             "Please explain the implications of this diagnosis based on foot pressure maps, and describe the characteristics that support this conclusion."
         )
-
+        client = openai.OpenAI(api_key=openai.api_key)
         # Call OpenAI API for analysis
-        response = openai.chat.completions.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are a medical assistant specializing in diabetic foot conditions."},
