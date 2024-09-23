@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import torch
 import openai
-import cv2
 import os
 import numpy as np
 from PIL import Image
@@ -34,10 +33,11 @@ model.load_state_dict(torch.load('mobilenet_v3_model.pth'))
 model.eval()
 
 def preprocess_image(image):
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    image = cv2.resize(image, (224, 224))
-    image = image / 255.0
-    image = np.transpose(image, (2, 0, 1))
+    # Convert image to RGB and resize
+    image = image.convert("RGB")
+    image = image.resize((224, 224))
+    image = np.array(image) / 255.0  # Normalize the image
+    image = np.transpose(image, (2, 0, 1))  # Change to (C, H, W)
     return torch.tensor(image, dtype=torch.float32)
 
 st.title("Diabetic Foot Classification")
@@ -65,11 +65,8 @@ if uploaded_left_image and uploaded_right_image:
     # Add a Submit button
     if st.button("Analyze"):
         # Preprocess images for prediction
-        left_image_tensor = preprocess_image(np.array(left_image))
-        right_image_tensor = preprocess_image(np.array(right_image))
-
-        left_image_tensor = left_image_tensor.unsqueeze(0).to('cpu')  # Add batch dimension
-        right_image_tensor = right_image_tensor.unsqueeze(0).to('cpu')
+        left_image_tensor = preprocess_image(left_image).unsqueeze(0)  # Add batch dimension
+        right_image_tensor = preprocess_image(right_image).unsqueeze(0)
 
         # Get prediction
         with torch.no_grad():
