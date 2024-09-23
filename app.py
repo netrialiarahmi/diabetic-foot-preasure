@@ -48,11 +48,11 @@ if uploaded_left_image and uploaded_right_image:
     
     with col1:
         left_image_preview = Image.open(uploaded_left_image)
-        st.image(left_image_preview, caption="Left Foot Image", use_column_width=True)
+        st.image(left_image_preview, caption="Left Foot Image", width=150)  # Mengatur lebar gambar
     
     with col2:
         right_image_preview = Image.open(uploaded_right_image)
-        st.image(right_image_preview, caption="Right Foot Image", use_column_width=True)
+        st.image(right_image_preview, caption="Right Foot Image", width=150)  # Mengatur lebar gambar
 
     if st.button("Submit"):
         # Preprocess images for prediction
