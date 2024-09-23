@@ -7,7 +7,7 @@ import numpy as np
 from PIL import Image
 from torchvision import models
 import torch.nn.functional as F
-import torch.nn as nn
+import torch.nn as nn  # Pastikan ini juga diimpor
 
 # Load your model and any other necessary data
 class MobileNetV3Model(nn.Module):
@@ -43,12 +43,16 @@ uploaded_left_image = st.file_uploader("Upload Left Foot Image", type=["jpg", "p
 uploaded_right_image = st.file_uploader("Upload Right Foot Image", type=["jpg", "png"])
 
 if uploaded_left_image and uploaded_right_image:
-    # Show image previews
-    left_image_preview = Image.open(uploaded_left_image)
-    right_image_preview = Image.open(uploaded_right_image)
-
-    st.image(left_image_preview, caption="Left Foot Image", use_column_width=True)
-    st.image(right_image_preview, caption="Right Foot Image", use_column_width=True)
+    # Show image previews in two columns
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        left_image_preview = Image.open(uploaded_left_image)
+        st.image(left_image_preview, caption="Left Foot Image", use_column_width=True)
+    
+    with col2:
+        right_image_preview = Image.open(uploaded_right_image)
+        st.image(right_image_preview, caption="Right Foot Image", use_column_width=True)
 
     if st.button("Submit"):
         # Preprocess images for prediction
