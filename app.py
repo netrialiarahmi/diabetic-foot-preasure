@@ -1,62 +1,52 @@
 import streamlit as st
+import pandas as pd
 import torch
-import torch.nn as nn
 import cv2
+import os
 import numpy as np
-from torchvision.models import mobilenet_v3_large
+from PIL import Image
+from torchvision import models
+import torch.nn.functional as F
 
-# Definisikan model MobileNetV3
+# Load your model and any other necessary data
 class MobileNetV3Model(nn.Module):
-    def __init__(self, extractor_trainable=True):
+    def __init__(self, extractor_trainable: bool = True):
         super(MobileNetV3Model, self).__init__()
-        self.model = mobilenet_v3_large(pretrained=True)
-        self.model.classifier[3] = nn.Linear(self.model.classifier[3].in_features, 1)  # Sesuaikan output
+        mobilenet = models.mobilenet_v3_large(pretrained=True)
+        self.feature_extractor = mobilenet.features
+        self.fc = nn.Linear(mobilenet.classifier[0].in_features * 2, 1)
 
-        if not extractor_trainable:
-            for param in self.model.parameters():
-                param.requires_grad = False  # Membekukan lapisan jika tidak trainable
+    def forward(self, left_image, right_image):
+        x_left = self.feature_extractor(left_image)
+        x_right = self.feature_extractor(right_image)
+        x_left = F.adaptive_avg_pool2d(x_left, 1).reshape(x_left.size(0), -1)
+        x_right = F.adaptive_avg_pool2d(x_right, 1).reshape(x_right.size(0), -1)
+        x = torch.cat((x_left, x_right), dim=1)
+        return self.fc(x)
 
-    def forward(self, x):
-        return self.model(x)
+model = MobileNetV3Model()
+model.load_state_dict(torch.load('mobilenet_v3_model.pth'))
+model.eval()
 
-# Fungsi preprocessing
-def preprocessing(image):
+def preprocess_image(image):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     image = cv2.resize(image, (224, 224))
     image = image / 255.0
     image = np.transpose(image, (2, 0, 1))
-    image = torch.tensor(image, dtype=torch.float32)
-    return image
+    return torch.tensor(image, dtype=torch.float32)
 
-# Fungsi untuk memuat model
-def load_model():
-    model = MobileNetV3Model(extractor_trainable=True)
-    model.load_state_dict(torch.load('mobilenet_v3_model.pth'))
-    model.eval()
-    return model
+st.title("Diabetic Foot Classification")
+uploaded_left_image = st.file_uploader("Upload Left Foot Image", type=["jpg", "png"])
+uploaded_right_image = st.file_uploader("Upload Right Foot Image", type=["jpg", "png"])
 
-# Muat model saat aplikasi dijalankan
-model = load_model()
-
-# Streamlit interface
-st.title("Prediksi Penyakit Diabetes")
-
-# Input data (upload gambar)
-uploaded_file = st.file_uploader("Upload gambar", type=["jpg", "jpeg", "png"])
-
-if uploaded_file is not None:
-    file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-    image = cv2.imdecode(file_bytes, 1)
-
-    # Preprocess gambar
-    processed_image = preprocessing(image)
-
-    # Lakukan prediksi
+if uploaded_left_image and uploaded_right_image:
+    left_image = preprocess_image(np.array(Image.open(uploaded_left_image)))
+    right_image = preprocess_image(np.array(Image.open(uploaded_right_image)))
+    
+    left_image = left_image.unsqueeze(0).to('cpu')  # Add batch dimension
+    right_image = right_image.unsqueeze(0).to('cpu')
+    
     with torch.no_grad():
-        predictions = model(processed_image.unsqueeze(0))
+        prediction = model(left_image, right_image)
+        st.write(f"Prediction: {'Diabetic' if prediction > 0.5 else 'Non-Diabetic'}")
 
-    # Tampilkan hasil prediksi
-    st.write("Hasil Prediksi:", predictions.item())
-
-    # Menampilkan gambar yang di-upload
-    st.image(image, channels="RGB", use_column_width=True, caption='Uploaded Image')
