@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 from mobilenet_v3_model import MobileNetV3Model
 
-
 # Fungsi preprocessing
 def preprocessing(image):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -39,10 +38,11 @@ if uploaded_file is not None:
 
     # Lakukan prediksi
     with torch.no_grad():
-        predictions = model(processed_image.unsqueeze(0))
+        predictions = model(processed_image.unsqueeze(0))  # Tambahkan dimensi batch
+        predictions = torch.sigmoid(predictions)  # Jika menggunakan sigmoid
 
     # Tampilkan hasil prediksi
-    st.write("Hasil Prediksi:", predictions)
+    st.write("Hasil Prediksi:", predictions.numpy())  # Ubah tensor menjadi numpy
 
     # Menampilkan gambar yang di-upload
     st.image(image, channels="RGB", use_column_width=True, caption='Uploaded Image')
