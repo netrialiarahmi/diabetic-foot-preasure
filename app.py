@@ -1,8 +1,23 @@
 import streamlit as st
 import torch
+import torch.nn as nn
 import cv2
 import numpy as np
-from mobilenet_v3_model import MobileNetV3Model
+from torchvision.models import mobilenet_v3_large
+
+# Definisikan model MobileNetV3
+class MobileNetV3Model(nn.Module):
+    def __init__(self, extractor_trainable=True):
+        super(MobileNetV3Model, self).__init__()
+        self.model = mobilenet_v3_large(pretrained=True)
+        self.model.classifier[3] = nn.Linear(self.model.classifier[3].in_features, 1)  # Sesuaikan output
+
+        if not extractor_trainable:
+            for param in self.model.parameters():
+                param.requires_grad = False  # Membekukan lapisan jika tidak trainable
+
+    def forward(self, x):
+        return self.model(x)
 
 # Fungsi preprocessing
 def preprocessing(image):
@@ -38,11 +53,10 @@ if uploaded_file is not None:
 
     # Lakukan prediksi
     with torch.no_grad():
-        predictions = model(processed_image.unsqueeze(0))  # Tambahkan dimensi batch
-        predictions = torch.sigmoid(predictions)  # Jika menggunakan sigmoid
+        predictions = model(processed_image.unsqueeze(0))
 
     # Tampilkan hasil prediksi
-    st.write("Hasil Prediksi:", predictions.numpy())  # Ubah tensor menjadi numpy
+    st.write("Hasil Prediksi:", predictions.item())
 
     # Menampilkan gambar yang di-upload
     st.image(image, channels="RGB", use_column_width=True, caption='Uploaded Image')
