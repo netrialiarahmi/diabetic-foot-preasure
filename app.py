@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import torch
+import openai
 import cv2
 import os
 import numpy as np
@@ -8,7 +9,6 @@ from PIL import Image
 from torchvision import models
 import torch.nn.functional as F
 import torch.nn as nn
-import openai
 
 openai_api_key = st.secrets["OPENAI_API_KEY"]
 openai.api_key = openai_api_key
