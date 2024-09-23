@@ -4,3 +4,4 @@ torchvision
 opencv-python
 opencv-python-headless
 Pillow
+openai
