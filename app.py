@@ -47,10 +47,11 @@ if uploaded_left_image and uploaded_right_image:
     col1, col2 = st.columns(2)
     
     with col1:
-        st.image(Image.open(uploaded_left_image), caption="Left Foot Image", width=150)  # Mengatur lebar gambar
+        st.image(Image.open(uploaded_right_image), caption="Right Foot Image", width=150)  # Mengatur lebar gambar
+        
     
     with col2:
-        st.image(Image.open(uploaded_right_image), caption="Right Foot Image", width=150)  # Mengatur lebar gambar
+        st.image(Image.open(uploaded_left_image), caption="Left Foot Image", width=150)  # Mengatur lebar gambar
 
     st.markdown("---")  # Menambahkan garis pemisah
 
