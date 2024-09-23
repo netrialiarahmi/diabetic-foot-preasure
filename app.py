@@ -43,28 +43,22 @@ uploaded_left_image = st.file_uploader("Upload Left Foot Image", type=["jpg", "p
 uploaded_right_image = st.file_uploader("Upload Right Foot Image", type=["jpg", "png"])
 
 if uploaded_left_image and uploaded_right_image:
-    # Show image previews in two columns with styled containers
+    # Show image previews in two columns
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("Left Foot")
-        left_image_preview = Image.open(uploaded_left_image)
-        st.image(left_image_preview, caption="Preview Left Foot", width=150)  # Mengatur lebar gambar
-        st.write("### Description:")
-        st.write("This is the image of the left foot. Ensure clarity and proper lighting.")
+        st.image(Image.open(uploaded_left_image), caption="Left Foot Image", width=150)  # Mengatur lebar gambar
     
     with col2:
-        st.subheader("Right Foot")
-        right_image_preview = Image.open(uploaded_right_image)
-        st.image(right_image_preview, caption="Preview Right Foot", width=150)  # Mengatur lebar gambar
-        st.write("### Description:")
-        st.write("This is the image of the right foot. Ensure clarity and proper lighting.")
+        st.image(Image.open(uploaded_right_image), caption="Right Foot Image", width=150)  # Mengatur lebar gambar
+
+    st.markdown("---")  # Menambahkan garis pemisah
 
     # Add a Submit button
     if st.button("Submit"):
         # Preprocess images for prediction
-        left_image = preprocess_image(np.array(left_image_preview))
-        right_image = preprocess_image(np.array(right_image_preview))
+        left_image = preprocess_image(np.array(Image.open(uploaded_left_image)))
+        right_image = preprocess_image(np.array(Image.open(uploaded_right_image)))
         
         left_image = left_image.unsqueeze(0).to('cpu')  # Add batch dimension
         right_image = right_image.unsqueeze(0).to('cpu')
