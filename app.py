@@ -94,7 +94,7 @@ if uploaded_left_image and uploaded_right_image:
             ]
         )
 
-        analysis_result = response['choices'][0]['message']['content']
+        analysis_result = response.choices[0].message.content
 
         st.write("### Analysis Result:")
         st.write(analysis_result)
