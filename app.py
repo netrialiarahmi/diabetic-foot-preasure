@@ -7,7 +7,11 @@ import numpy as np
 from PIL import Image
 from torchvision import models
 import torch.nn.functional as F
-import torch.nn as nn  # Pastikan ini juga diimpor
+import torch.nn as nn
+import openai
+
+# Set up OpenAI API key
+openai.api_key = 'YOUR_API_KEY_HERE'  # Ganti dengan API key Anda
 
 # Load your model and any other necessary data
 class MobileNetV3Model(nn.Module):
@@ -43,27 +47,58 @@ uploaded_left_image = st.file_uploader("Upload Left Foot Image", type=["jpg", "p
 uploaded_right_image = st.file_uploader("Upload Right Foot Image", type=["jpg", "png"])
 
 if uploaded_left_image and uploaded_right_image:
+    # Read and display images
+    left_image = Image.open(uploaded_left_image)
+    right_image = Image.open(uploaded_right_image)
+
     # Show image previews in two columns
     col1, col2 = st.columns(2)
     
     with col1:
-        st.image(Image.open(uploaded_right_image), caption="Right Foot Image", width=150)  # Mengatur lebar gambar
-        
+        st.image(left_image, caption="Left Foot Image", width=150)
     
     with col2:
-        st.image(Image.open(uploaded_left_image), caption="Left Foot Image", width=150)  # Mengatur lebar gambar
+        st.image(right_image, caption="Right Foot Image", width=150)
 
-    st.markdown("---")  # Menambahkan garis pemisah
+    st.markdown("---")
 
     # Add a Submit button
-    if st.button("Submit"):
+    if st.button("Analyze"):
         # Preprocess images for prediction
-        left_image = preprocess_image(np.array(Image.open(uploaded_left_image)))
-        right_image = preprocess_image(np.array(Image.open(uploaded_right_image)))
-        
-        left_image = left_image.unsqueeze(0).to('cpu')  # Add batch dimension
-        right_image = right_image.unsqueeze(0).to('cpu')
-        
+        left_image_tensor = preprocess_image(np.array(left_image))
+        right_image_tensor = preprocess_image(np.array(right_image))
+
+        left_image_tensor = left_image_tensor.unsqueeze(0).to('cpu')  # Add batch dimension
+        right_image_tensor = right_image_tensor.unsqueeze(0).to('cpu')
+
+        # Get prediction
         with torch.no_grad():
-            prediction = model(left_image, right_image)
-            st.write(f"### Prediction: {'Diabetic' if prediction > 0.5 else 'Non-Diabetic'}")
+            prediction = model(left_image_tensor, right_image_tensor)
+            is_diabetic = prediction > 0.5
+
+        # Display prediction result
+        prediction_label = "Diabetic" if is_diabetic else "Non-Diabetic"
+        st.write(f"### Prediction: {prediction_label}")
+
+        # Determine analysis prompt based on prediction
+        analysis_prompt = (
+            "You are an expert in diabetic foot analysis. "
+            "The user has uploaded images of feet. "
+            f"The prediction is that the patient is {prediction_label}. "
+            "Please explain the implications of this diagnosis based on foot pressure maps, and describe the characteristics that support this conclusion."
+        )
+
+        # Call OpenAI API for analysis
+        response = openai.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a medical assistant specializing in diabetic foot conditions."},
+                {"role": "user", "content": analysis_prompt},
+                {"role": "assistant", "content": ""}
+            ]
+        )
+
+        analysis_result = response['choices'][0]['message']['content']
+
+        st.write("### Analysis Result:")
+        st.write(analysis_result)
