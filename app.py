@@ -43,17 +43,24 @@ uploaded_left_image = st.file_uploader("Upload Left Foot Image", type=["jpg", "p
 uploaded_right_image = st.file_uploader("Upload Right Foot Image", type=["jpg", "png"])
 
 if uploaded_left_image and uploaded_right_image:
-    # Show image previews in two columns
+    # Show image previews in two columns with styled containers
     col1, col2 = st.columns(2)
     
     with col1:
+        st.subheader("Left Foot")
         left_image_preview = Image.open(uploaded_left_image)
-        st.image(left_image_preview, caption="Left Foot Image", width=150)  # Mengatur lebar gambar
+        st.image(left_image_preview, caption="Preview Left Foot", width=150)  # Mengatur lebar gambar
+        st.write("### Description:")
+        st.write("This is the image of the left foot. Ensure clarity and proper lighting.")
     
     with col2:
+        st.subheader("Right Foot")
         right_image_preview = Image.open(uploaded_right_image)
-        st.image(right_image_preview, caption="Right Foot Image", width=150)  # Mengatur lebar gambar
+        st.image(right_image_preview, caption="Preview Right Foot", width=150)  # Mengatur lebar gambar
+        st.write("### Description:")
+        st.write("This is the image of the right foot. Ensure clarity and proper lighting.")
 
+    # Add a Submit button
     if st.button("Submit"):
         # Preprocess images for prediction
         left_image = preprocess_image(np.array(left_image_preview))
@@ -64,4 +71,4 @@ if uploaded_left_image and uploaded_right_image:
         
         with torch.no_grad():
             prediction = model(left_image, right_image)
-            st.write(f"Prediction: {'Diabetic' if prediction > 0.5 else 'Non-Diabetic'}")
+            st.write(f"### Prediction: {'Diabetic' if prediction > 0.5 else 'Non-Diabetic'}")
