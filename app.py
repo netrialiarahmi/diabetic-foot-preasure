@@ -81,7 +81,9 @@ def analyze_image_with_openai(image, context=""):
             messages=[
                 {
                     "role": "system",
-                    "content": """You are an expert podiatrist and diabetic foot specialist with extensive experience in diabetic foot analysis. 
+                    "content": """You are an expert podiatrist and diabetic foot specialist with extensive experience in diabetic foot analysis.
+                    IMPORTANT: Always provide direct analysis of the image shown.
+                    DO NOT start with 'I'm unable to analyze' or similar disclaimers
                     Your analysis should be:
                     1. Highly detailed and specific
                     2. Based on visible evidence in the image
