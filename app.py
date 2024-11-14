@@ -77,7 +77,7 @@ def analyze_image_with_openai(image, context=""):
     
     try:
         response = client.chat.completions.create(
-            model="gpt-4-vision-preview",
+            model="gpt-4o-mini",
             messages=[
                 {
                     "role": "system",
