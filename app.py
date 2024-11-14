@@ -81,7 +81,7 @@ def analyze_image_with_openai(image, context=""):
             messages=[
                 {
                     "role": "system",
-                    "content": """You are an expert podiatrist and diabetic foot specialist with extensive experience in diabetic foot analysis.
+                    "content": """You are an expert podiatrist and diabetic foot specialist with extensive experience in diabetic foot preassure maps analysis.
                     IMPORTANT: Always provide direct analysis of the image shown.
                     DO NOT start with 'I'm unable to analyze' or similar disclaimers
                     Your analysis should be:
@@ -202,7 +202,7 @@ Be specific, practical, and actionable in your recommendations."""
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a senior podiatrist specializing in diabetic foot care. Provide comprehensive, evidence-based recommendations that are practical and actionable."
+                    "content": "You are a senior podiatrist specializing in diabetic foot care with extensive experience in diabetic foot preassure maps analysis. Provide comprehensive, evidence-based recommendations that are practical and actionable."
                 },
                 {"role": "user", "content": recommendations_prompt}
             ],
