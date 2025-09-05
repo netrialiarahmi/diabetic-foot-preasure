@@ -1,6 +1,6 @@
 # 🏥 Advanced Diabetic Foot Analysis System
 
-This project is a sophisticated web-based tool designed for the comprehensive analysis of diabetic foot conditions. It leverages a powerful dual-AI approach, combining a custom Deep Learning model for classification with advanced Large Language Models (from OpenAI) for detailed qualitative analysis and care recommendations.
+This project is a web-based tool designed for the comprehensive analysis of diabetic foot conditions. It leverages a powerful dual-AI approach, combining a custom Deep Learning model for classification with advanced Large Language Models (from OpenAI) for detailed qualitative analysis and care recommendations.
 
 The application provides a holistic assessment by analyzing images of both the left and right foot, delivering insights that are both quantitative and descriptive.
 
